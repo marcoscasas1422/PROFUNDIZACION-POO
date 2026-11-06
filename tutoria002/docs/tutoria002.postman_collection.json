@@ -1,0 +1,609 @@
+{
+  "info": {
+    "name": "tutoria002 - Teacher API",
+    "description": "Colección para probar el CRUD de profesores. Ejecutar en orden: crear -> listar -> actualizar -> eliminar.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8089"
+    },
+    {
+      "key": "teacherId",
+      "value": "1"
+    },
+    {
+      "key": "studentId",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Teacher",
+      "item": [
+        {
+          "name": "1. Crear profesor (OK)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/teacher",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teacher"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"names\": \"Juan\",\n  \"lastNames\": \"Pérez\",\n  \"email\": \"juan.perez@correo.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 y success=true',()=>{pm.response.to.have.status(201);const j=pm.response.json();pm.expect(j.success).to.eql(true);pm.collectionVariables.set('teacherId',j.teacher.id);});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "2. Crear profesor duplicado (email repetido -> false)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/teacher",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teacher"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"names\": \"Juan\",\n  \"lastNames\": \"Pérez\",\n  \"email\": \"juan.perez@correo.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409 y success=false',()=>{pm.response.to.have.status(409);pm.expect(pm.response.json().success).to.eql(false);});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "3. Crear profesor sin datos (400 -> false)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/teacher",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teacher"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"names\": \"\",\n  \"lastNames\": \"\",\n  \"email\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 y success=false',()=>{pm.response.to.have.status(400);pm.expect(pm.response.json().success).to.eql(false);});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "4. Listar profesores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/teacher",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teacher"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 y success=true',()=>{pm.response.to.have.status(200);pm.expect(pm.response.json().success).to.eql(true);});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "5. Actualizar profesor (OK)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/teacher",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teacher"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{teacherId}},\n  \"names\": \"Juan Carlos\",\n  \"lastNames\": \"Pérez\",\n  \"email\": \"juan.perez@correo.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 y success=true',()=>{pm.response.to.have.status(200);pm.expect(pm.response.json().success).to.eql(true);});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "6. Actualizar profesor inexistente (404 -> false)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/teacher",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teacher"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 999999,\n  \"names\": \"X\",\n  \"lastNames\": \"Y\",\n  \"email\": \"x@y.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 y success=false',()=>{pm.response.to.have.status(404);pm.expect(pm.response.json().success).to.eql(false);});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "7. Eliminar profesor (OK)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/teacher/{{teacherId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teacher",
+                "{{teacherId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 y success=true',()=>{pm.response.to.have.status(200);pm.expect(pm.response.json().success).to.eql(true);});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "8. Eliminar profesor inexistente (404 -> false)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/teacher/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teacher",
+                "999999"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 y success=false',()=>{pm.response.to.have.status(404);pm.expect(pm.response.json().success).to.eql(false);});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Student",
+      "item": [
+        {
+          "name": "1. Crear estudiante (OK)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/student",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teacher"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"names\": \"Ana\",\n  \"lastNames\": \"Gómez\",\n  \"email\": \"ana.gomez@correo.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 y success=true',()=>{pm.response.to.have.status(201);const j=pm.response.json();pm.expect(j.success).to.eql(true);pm.collectionVariables.set('studentId',j.student.id);});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "2. Crear estudiante duplicado (email repetido -> false)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/student",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teacher"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"names\": \"Ana\",\n  \"lastNames\": \"Gómez\",\n  \"email\": \"ana.gomez@correo.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409 y success=false',()=>{pm.response.to.have.status(409);pm.expect(pm.response.json().success).to.eql(false);});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "3. Crear estudiante sin datos (400 -> false)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/student",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teacher"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"names\": \"\",\n  \"lastNames\": \"\",\n  \"email\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 y success=false',()=>{pm.response.to.have.status(400);pm.expect(pm.response.json().success).to.eql(false);});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "4. Listar estudiantees",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/student",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teacher"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 y success=true',()=>{pm.response.to.have.status(200);pm.expect(pm.response.json().success).to.eql(true);});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "5. Actualizar estudiante (OK)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/student",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teacher"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": {{studentId}},\n  \"names\": \"Ana María\",\n  \"lastNames\": \"Gómez\",\n  \"email\": \"ana.gomez@correo.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 y success=true',()=>{pm.response.to.have.status(200);pm.expect(pm.response.json().success).to.eql(true);});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "6. Actualizar estudiante inexistente (404 -> false)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/student",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teacher"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 999999,\n  \"names\": \"X\",\n  \"lastNames\": \"Y\",\n  \"email\": \"x@y.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 y success=false',()=>{pm.response.to.have.status(404);pm.expect(pm.response.json().success).to.eql(false);});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "7. Eliminar estudiante (OK)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/student/{{studentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teacher",
+                "{{studentId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 y success=true',()=>{pm.response.to.have.status(200);pm.expect(pm.response.json().success).to.eql(true);});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "8. Eliminar estudiante inexistente (404 -> false)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/student/999999",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "teacher",
+                "999999"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 y success=false',()=>{pm.response.to.have.status(404);pm.expect(pm.response.json().success).to.eql(false);});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
