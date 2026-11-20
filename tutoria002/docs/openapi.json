@@ -182,7 +182,7 @@
         "tags": [
           "Student"
         ],
-        "summary": "Listar todos los estudiantees",
+        "summary": "Listar todos los estudiantes",
         "responses": {
           "200": {
             "description": "OK",

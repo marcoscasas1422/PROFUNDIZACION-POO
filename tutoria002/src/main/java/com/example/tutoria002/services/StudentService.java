@@ -1,56 +1,48 @@
 package com.example.tutoria002.services;
 
 import java.util.ArrayList;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.List;
 import org.springframework.stereotype.Service;
+import com.example.tutoria002.exceptions.DuplicateStudentEmailException;
+import com.example.tutoria002.exceptions.StudentNotFoundException;
 import com.example.tutoria002.models.Student;
 import com.example.tutoria002.repositories.IStudentRepository;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class StudentService {
 
-    @Autowired
-    private IStudentRepository studentRepository;
+    private final IStudentRepository studentRepository;
 
-    /** Crea un estudiante. Devuelve null si el email ya está registrado. */
-    public Student createStudent(Student student) {
-        if (existStudentByEmail(student.getEmail())) {
-            return null;
+    public List<Student> getAll() {
+        List<Student> students = new ArrayList<>();
+        studentRepository.findAll().forEach(students::add);
+        return students;
+    }
+
+    public Student save(Student student) {
+        if (studentRepository.existsByEmailIgnoreCase(student.getEmail())) {
+            throw new DuplicateStudentEmailException(student.getEmail());
         }
-        student.setId(0); // fuerza INSERT
+        student.setId(0); // para que siempre cree uno nuevo
         return studentRepository.save(student);
     }
 
-    public ArrayList<Student> getAll() {
-        return (ArrayList<Student>) studentRepository.findAll();
-    }
-
-    /** Actualiza un estudiante. Devuelve null si no existe. */
-    public Student updateStudent(Student student) {
-        return existStudent(student.getId()) ? studentRepository.save(student) : null;
-    }
-
-    /** Elimina por id. true si lo eliminó, false si no existía. */
-    public boolean deleteStudent(int id) {
-        if (!existStudent(id)) {
-            return false;
+    public Student update(Student student) {
+        if (!studentRepository.existsById(student.getId())) {
+            throw new StudentNotFoundException(student.getId());
         }
+        if (studentRepository.existsByEmailIgnoreCaseAndIdNot(student.getEmail(), student.getId())) {
+            throw new DuplicateStudentEmailException(student.getEmail());
+        }
+        return studentRepository.save(student);
+    }
+
+    public Student delete(int id) {
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new StudentNotFoundException(id));
         studentRepository.deleteById(id);
-        return true;
-    }
-
-    /** Validación: ¿existe un estudiante con ese id? */
-    public boolean existStudent(int id) {
-        return studentRepository.existsById(id);
-    }
-
-    /** Validación: ¿ya hay un estudiante con ese email? */
-    public boolean existStudentByEmail(String email) {
-        return email != null && studentRepository.existsByEmailIgnoreCase(email.trim());
-    }
-
-    /** Validación: ¿otro estudiante distinto de este id usa ese email? */
-    public boolean existEmailInOtherStudent(String email, int id) {
-        return email != null && studentRepository.existsByEmailIgnoreCaseAndIdNot(email.trim(), id);
+        return student;
     }
 }

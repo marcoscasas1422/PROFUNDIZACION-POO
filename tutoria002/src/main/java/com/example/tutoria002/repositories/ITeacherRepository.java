@@ -12,4 +12,7 @@ public interface ITeacherRepository extends CrudRepository<Teacher, Integer> {
 
     // Para validar el email en una actualización (otro profesor con el mismo email)
     boolean existsByEmailIgnoreCaseAndIdNot(String email, int id);
+
+    // Para saber si una facultad todavía tiene docentes
+    boolean existsByFacultyId(Integer facultyId);
 }
